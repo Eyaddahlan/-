@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>أختبر نفسك !</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+    background: linear-gradient(120deg, #FFDEE9, #B5FFFC);
+    transition: all 0.5s;
+  }
+  h1 {
+    margin-bottom: 20px;
+  }
+  .question {
+    font-size: 1.2em;
+    margin: 20px 0;
+  }
+  .options button {
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+    padding: 10px;
+    font-size: 1em;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    color: white;
+    transition: transform 0.2s;
+  }
+  .options button:hover {
+    transform: scale(1.05);
+  }
+  .feedback {
+    font-size: 1.2em;
+    margin: 15px 0;
+  }
+  .next-btn, .lang-btn {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    color: white;
+    background-color: #333;
+    transition: 0.3s;
+  }
+  .next-btn:hover, .lang-btn:hover {
+    background-color: #555;
+  }
+</style>
+</head>
+<body>
+<h1 id="title">أختبر نفسك !</h1>
+
+<div class="question" id="question"></div>
+
+<div class="options">
+  <button id="opt0"></button>
+  <button id="opt1"></button>
+  <button id="opt2"></button>
+  <button id="opt3"></button>
+</div>
+
+<div class="feedback" id="feedback"></div>
+<button class="next-btn" id="nextBtn" style="display:none;">التالي</button>
+<button class="lang-btn" id="langBtn">EN</button>
+
+<script>
+let lang = "ar"; // اللغة الحالية
+let score = 0;
+let current = 0;
+
+const questions = [
+  {
+    ar: { q: "ما عاصمة فرنسا؟", options: ["باريس", "لندن", "مدريد", "برلين"], answer: 0 },
+    en: { q: "What is the capital of France?", options: ["Paris", "London", "Madrid", "Berlin"], answer: 0 }
+  },
+  {
+    ar: { q: "كم عدد الكواكب في المجموعة الشمسية؟", options: ["7", "8", "9", "10"], answer: 1 },
+    en: { q: "How many planets are in the solar system?", options: ["7", "8", "9", "10"], answer: 1 }
+  },
+  {
+    ar: { q: "أي عنصر رمزه H؟", options: ["هيدروجين", "هيليوم", "هيدروجين", "هليوم"], answer: 0 },
+    en: { q: "Which element has the symbol H?", options: ["Hydrogen", "Helium", "Hydrogen", "Helium"], answer: 0 }
+  },
+  {
+    ar: { q: "ما أكبر محيط في العالم؟", options: ["الأطلسي", "الهادئ", "الهندي", "الشمالي"], answer: 1 },
+    en: { q: "What is the largest ocean in the world?", options: ["Atlantic", "Pacific", "Indian", "Arctic"], answer: 1 }
+  },
+  {
+    ar: { q: "كم عدد أيام الأسبوع؟", options: ["5", "6", "7", "8"], answer: 2 },
+    en: { q: "How many days are in a week?", options: ["5", "6", "7", "8"], answer: 2 }
+  },
+];
+
+// ألوان مبهجة للأزرار
+const btnColors = ["#FF6F61", "#6B5B95", "#88B04B", "#FFA500"];
+
+function loadQuestion() {
+  const q = questions[current][lang];
+  document.getElementById("question").innerText = q.q;
+  q.options.forEach((opt, i) => {
+    const btn = document.getElementById("opt" + i);
+    btn.innerText = opt;
+    btn.style.backgroundColor = btnColors[i];
+    btn.disabled = false;
+  });
+  document.getElementById("feedback").innerText = "";
+  document.getElementById("nextBtn").style.display = "none";
+}
+
+function checkAnswer(i) {
+  const q = questions[current][lang];
+  const feedback = document.getElementById("feedback");
+  // تعطيل كل الأزرار بعد الضغط
+  for(let j=0;j<4;j++) document.getElementById("opt"+j).disabled=true;
+  if(i === q.answer) {
+    feedback.innerText = lang==="ar" ? "صح ✅" : "Correct ✅";
+    score++;
+  } else {
+    feedback.innerText = lang==="ar" ? `غلط ❌ الإجابة الصحيحة: ${q.options[q.answer]}` : `Wrong ❌ Correct answer: ${q.options[q.answer]}`;
+  }
+  document.getElementById("nextBtn").style.display = "inline-block";
+}
+
+function nextQuestion() {
+  current++;
+  if(current < questions.length) {
+    loadQuestion();
+  } else {
+    const feedback = document.getElementById("feedback");
+    feedback.innerText = lang==="ar" ? `انتهت اللعبة! نقاطك: ${score} من ${questions.length}` : `Game over! Your score: ${score} of ${questions.length}`;
+    document.getElementById("question").innerText = "";
+    document.querySelectorAll(".options button").forEach(btn=>btn.style.display="none");
+    document.getElementById("nextBtn").style.display="none";
+  }
+}
+
+function toggleLang() {
+  lang = lang==="ar" ? "en" : "ar";
+  document.getElementById("title").innerText = lang==="ar" ? "أختبر نفسك !" : "Test Yourself!";
+  loadQuestion();
+}
+
+document.querySelectorAll(".options button").forEach((btn, i)=>{
+  btn.addEventListener("click", ()=>checkAnswer(i));
+});
+document.getElementById("nextBtn").addEventListener("click", nextQuestion);
+document.getElementById("langBtn").addEventListener("click", toggleLang);
+
+loadQuestion();
+</script>
+</body>
+</html>
